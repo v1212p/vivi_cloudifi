@@ -1,0 +1,42 @@
+import React from 'react';
+
+interface Props {
+    appDetails: any[];
+}
+
+const AppDetailsTable: React.FC<Props> = ({ appDetails }) => {
+    return (
+        <table>
+            <thead>
+                <tr>
+                    <th>App ID</th>
+                    <th>App Name</th>
+                    <th>Environment</th>
+                    <th>Memory Allocated</th>
+                    <th>Memory Used</th>
+                    <th>Disk Allocated</th>
+                    <th>Disk Used</th>
+                    <th>CPU Allocated</th>
+                    <th>CPU Used</th>
+                </tr>
+            </thead>
+            <tbody>
+                {appDetails.map((detail, index) => (
+                    <tr key={index}>
+                        <td>{detail.appid}</td>
+                        <td>{detail.appname}</td>
+                        <td>{detail.environment}</td>
+                        <td>{detail.memory_allocated}</td>
+                        <td>{detail.memory_used}</td>
+                        <td>{detail.disk_allocated}</td>
+                        <td>{detail.disk_used}</td>
+                        <td>{detail.cpu_allocated}</td>
+                        <td>{detail.cpu_used}</td>
+                    </tr>
+                ))}
+            </tbody>
+        </table>
+    );
+};
+
+export default AppDetailsTable;

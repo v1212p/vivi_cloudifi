@@ -1,0 +1,164 @@
+Certainly! I'll help you create the corresponding OpenAPI (Swagger) documentation for your `/api/environments/{appid}` and `/api/appdetails` endpoints based on the provided example.
+
+### Example OpenAPI Documentation
+
+**openapi.yml:**
+
+```yaml
+openapi: 3.0.0
+info:
+  title: API Documentation
+  version: 1.0.0
+servers:
+  - url: http://127.0.0.1:5000
+paths:
+  /apps/fetch_price_config:
+    get:
+      summary: Fetch Prices
+      description: Fetches Current Prices
+      responses:
+        "200":
+          description: Successfully fetched Prices
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: success
+                  status:
+                    type: integer
+                    example: 200
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        memory_price_per_mb_hour:
+                          type: float
+                        memory_price_per_mb_hour_standby:
+                          type: float
+                        disk_price_per_mb_hour:
+                          type: float
+                        disk_price_per_mb_hour_standby:
+                          type: float
+                        active:
+                          type: boolean
+                        created_on:
+                          type: string
+                          example: "2024-07-01 10:37:41.271800"
+
+  /api/environments/{appid}:
+    get:
+      summary: Fetch unique environments for a given appid
+      description: Fetches unique environments associated with the specified appid
+      parameters:
+        - name: appid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successfully fetched environments
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  environments:
+                    type: array
+                    items:
+                      type: string
+                    example:
+                      - production
+                      - staging
+                      - development
+
+  /api/appdetails:
+    get:
+      summary: Fetch details for a given appid and environment
+      description: Fetches details for the specified appid and environment
+      parameters:
+        - name: appid
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: environment
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successfully fetched app details
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    appid:
+                      type: string
+                    appname:
+                      type: string
+                    environment:
+                      type: string
+                    memory_allocated:
+                      type: integer
+                    memory_used:
+                      type: integer
+                    disk_allocated:
+                      type: integer
+                    disk_used:
+                      type: integer
+                    cpu_allocated:
+                      type: integer
+                    cpu_used:
+                      type: integer
+                  example:
+                    - appid: "123"
+                      appname: "ExampleApp"
+                      environment: "production"
+                      memory_allocated: 2048
+                      memory_used: 1024
+                      disk_allocated: 100
+                      disk_used: 50
+                      cpu_allocated: 4
+                      cpu_used: 2
+```
+
+### Explanation:
+1. **Paths**:
+   - `/api/environments/{appid}`: This path includes a parameter `appid` which is required to fetch unique environments for the given `appid`.
+   - `/api/appdetails`: This path includes query parameters `appid` and `environment` to fetch the app details for the specified appid and environment.
+
+2. **Responses**:
+   - Each endpoint defines a `200` response with the expected JSON structure.
+   - For `/api/environments/{appid}`, the response includes an array of environments.
+   - For `/api/appdetails`, the response includes an array of objects with detailed information.
+
+### Steps to Use the Updated `openapi.yml`:
+1. **Update the `openapi.yml` File**:
+   - Place the updated `openapi.yml` file in the `static` directory or the path specified in your Flask application.
+
+2. **Run Your Flask Application**:
+   ```bash
+   python app.py
+   ```
+
+3. **Access Swagger UI**:
+   - Open your web browser and navigate to `http://127.0.0.1:5000/swagger`.
+
+4. **Test the Endpoints**:
+   - Use the Swagger UI to interact with your `/api/environments/{appid}` and `/api/appdetails` endpoints.
+   - Enter the required parameters and execute the requests to check the responses.
+
+By following these steps, you can use the Swagger UI to test your new endpoints and ensure they are working correctly. If you have any questions or encounter any issues, feel free to ask!

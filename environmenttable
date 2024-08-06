@@ -1,0 +1,27 @@
+import React from 'react';
+
+interface Props {
+    environments: string[];
+    onSelectEnvironment: (environment: string) => void;
+}
+
+const EnvironmentsTable: React.FC<Props> = ({ environments, onSelectEnvironment }) => {
+    return (
+        <table>
+            <thead>
+                <tr>
+                    <th>Environment</th>
+                </tr>
+            </thead>
+            <tbody>
+                {environments.map(env => (
+                    <tr key={env} onClick={() => onSelectEnvironment(env)}>
+                        <td>{env}</td>
+                    </tr>
+                ))}
+            </tbody>
+        </table>
+    );
+};
+
+export default EnvironmentsTable;

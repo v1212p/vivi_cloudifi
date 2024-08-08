@@ -1,0 +1,11 @@
+appid,appname,environment,memory,storage,cpu
+app001,App One,Production,512MB,20GB,2.4GHz
+app001,App Two,Development,1GB,50GB,2.8GHz
+app001,App Three,Testing,256MB,10GB,2.0GHz
+app001,App Four,Staging,2GB,100GB,3.0GHz
+app005,App Five,Production,1.5GB,75GB,2.5GHz
+app001,App Six,Development,512MB,30GB,2.2GHz
+app001,App Seven,Testing,1GB,40GB,2.6GHz
+app008,App Eight,Staging,2.5GB,120GB,3.2GHz
+app001,App Nine,Production,768MB,25GB,2.1GHz
+app010,App Ten,Development,1.2GB,60GB,2.9GHz

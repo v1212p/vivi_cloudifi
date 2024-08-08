@@ -1,0 +1,82 @@
+import React, { useState } from 'react';
+import './App.css';
+
+interface DataRow {
+  [key: string]: string;
+}
+
+const App: React.FC = () => {
+  const [data, setData] = useState<DataRow[]>([]);
+  const [appids, setAppids] = useState<string>('');
+  const [filteredRows, setFilteredRows] = useState<DataRow[]>([]);
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const text = e.target?.result as string;
+        const rows = text.split('\n').map(row => row.split(','));
+        const headers = rows[0];
+        const dataRows = rows.slice(1).map(row => {
+          const rowData: DataRow = {};
+          headers.forEach((header, index) => {
+            rowData[header] = row[index];
+          });
+          return rowData;
+        });
+        setData(dataRows);
+      };
+      reader.readAsText(file);
+    }
+  };
+
+  const handleSearch = () => {
+    const appidList = appids.split(',').map(id => id.trim());
+    const matchingRows = data.filter(row => appidList.includes(row.appid));
+    setFilteredRows(matchingRows);
+  };
+
+  return (
+    <div className="app">
+      <h1>Search App IDs</h1>
+      <input
+        type="file"
+        accept=".csv"
+        onChange={handleFileUpload}
+        className="file-input"
+      />
+      <input
+        type="text"
+        value={appids}
+        onChange={(e) => setAppids(e.target.value)}
+        placeholder="Enter App IDs separated by commas"
+        className="appid-input"
+      />
+      <button onClick={handleSearch} className="search-button">Search</button>
+
+      {filteredRows.length > 0 && (
+        <table className="result-table">
+          <thead>
+            <tr>
+              {Object.keys(filteredRows[0]).map(key => (
+                <th key={key}>{key}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {filteredRows.map((row, index) => (
+              <tr key={index}>
+                {Object.values(row).map((value, idx) => (
+                  <td key={idx}>{value}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </div>
+  );
+};
+
+export default App;

@@ -1,0 +1,148 @@
+import React, { useState, useEffect } from 'react';
+import './App.css';
+
+interface DataRow {
+  [key: string]: string;
+}
+
+const App: React.FC = () => {
+  const [data, setData] = useState<DataRow[]>([]);
+  const [appids, setAppids] = useState<string>('');
+  const [uniqueAppIds, setUniqueAppIds] = useState<string[]>([]);
+  const [filteredEnvironments, setFilteredEnvironments] = useState<string[]>([]);
+  const [expandedEnvironment, setExpandedEnvironment] = useState<string | null>(null);
+  const [message, setMessage] = useState<string>('');
+
+  // Define the columns you want to display in the collapsible table
+  const columnsToDisplay = ['appid', 'appname', 'memory', 'storage', 'cpu'];
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    console.log('fetchData called');
+    try {
+      const response = await fetch('/src/assets/vaish.csv');
+      
+      if (!response.ok) {
+        console.log('Network response was not ok');
+        return;
+      }
+
+      const text = await response.text();
+      const rows = text.split('\n').map(row => row.split(','));
+
+      const headers = rows[0];
+      const dataRows = rows.slice(1).map(row => {
+        const rowData: DataRow = {};
+        headers.forEach((header, index) => {
+          rowData[header] = row[index];
+        });
+        return rowData;
+      });
+
+      // Extract unique appids
+      const uniqueAppIds = Array.from(new Set(dataRows.map(row => row.appid)));
+      setUniqueAppIds(uniqueAppIds);
+      setData(dataRows);
+    } catch (error) {
+      console.error('Failed to fetch data:', error);
+    }
+  };
+
+  const handleSearch = () => {
+    const appidList = appids.split(',').map(id => id.trim());
+    const matchingRows = data.filter(row => appidList.includes(row.appid));
+    
+    // Extract unique environments
+    const uniqueEnvironments = Array.from(new Set(matchingRows.map(row => row.environment)));
+
+    setFilteredEnvironments(uniqueEnvironments);
+    if (uniqueEnvironments.length === 0) {
+      setMessage('No environments exist for the given App ID(s).');
+    } else {
+      setMessage('');
+    }
+  };
+
+  const handleEnvironmentClick = (environment: string) => {
+    if (expandedEnvironment === environment) {
+      setExpandedEnvironment(null); // Collapse if already expanded
+    } else {
+      setExpandedEnvironment(environment); // Expand the clicked environment
+    }
+  };
+
+  const getRowsForEnvironment = (environment: string) => {
+    const appidList = appids.split(',').map(id => id.trim());
+    return data.filter(row => appidList.includes(row.appid) && row.environment === environment);
+  };
+
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
+  return (
+    <div className="app">
+      <h1>Search App IDs</h1>
+      <div className="dropdown-container">
+        <input
+          type="text"
+          value={appids}
+          onChange={(e) => setAppids(e.target.value)}
+          onKeyPress={handleKeyPress}
+          placeholder="Search App ID"
+          className="appid-input"
+          list="appid-options"
+        />
+        <datalist id="appid-options">
+          {uniqueAppIds.map(appid => (
+            <option key={appid} value={appid} />
+          ))}
+        </datalist>
+      </div>
+      <button onClick={handleSearch} className="search-button">Search</button>
+
+      {message && <p className="message">{message}</p>}
+
+      {filteredEnvironments.length > 0 && (
+        <div className="result-table">
+          {filteredEnvironments.map((environment, index) => (
+            <div key={index}>
+              <h2 onClick={() => handleEnvironmentClick(environment)} className="environment-header">
+                {environment}
+              </h2>
+              {expandedEnvironment === environment && (
+                <div className="collapsible-content">
+                  <table>
+                    <thead>
+                      <tr>
+                        {columnsToDisplay.map(key => (
+                          <th key={key}>{key}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {getRowsForEnvironment(environment).map((row, idx) => (
+                        <tr key={idx}>
+                          {columnsToDisplay.map((key, i) => (
+                            <td key={i}>{row[key]}</td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default App;
